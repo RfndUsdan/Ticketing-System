@@ -10,15 +10,20 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
+
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/dashboard/statistic', [DashboardController::class, 'getStatistic']);
+    Route::middleware('admin')->group(function(){
+        Route::get('/dashboard/statistic', [DashboardController::class, 'getStatistic']);
+        Route::delete('/ticket/{code}', [TicketController::class, 'destroy']);
+    });
 
+    
     Route::get('/ticket', [TicketController::class, 'index']);
     Route::get('/ticket/{code}', [TicketController::class, 'show']);
     Route::post('/ticket', [TicketController::class, 'store']);
     Route::post('/ticket-reply/{code}', [TicketController::class, 'storeReply']);
-    Route::delete('/ticket/{code}', [TicketController::class, 'destroy']);
+    
 });
