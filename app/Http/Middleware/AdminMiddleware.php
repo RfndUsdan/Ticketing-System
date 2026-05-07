@@ -16,11 +16,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Contoh logika: hanya user dengan role 'admin' yang boleh lewat
         if (Auth::check() && Auth::user()->role === 'admin') {
             return $next($request);
         }
 
-        return response()->json(['message' => 'Unauthorized'], 403);
+        return response()->json(['message' => 'Akses Ditolak, Anda bukan admin'], 403);
     }
 }

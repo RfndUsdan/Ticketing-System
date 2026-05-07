@@ -12,30 +12,29 @@ class DashboardController extends Controller
 {
     public function getStatistic()
     {
-        $currentMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = $currentMonth->copy()->endOfMonth();
+        $startDate = Carbon::now()->subDays(30); 
+        $endDate = Carbon::now();
 
-        $totalTickets = Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])->count();
-
-        $activeTickets = Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])
+        $totalTickets = Ticket::whereBetween('created_at', [$startDate, $endDate])->count();
+        $activeTickets = Ticket::whereBetween('created_at', [$startDate, $endDate])
             ->where('status', '!=', 'resolved')
             ->count();
 
-        $resolvedTickets = Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])
+        $resolvedTickets = Ticket::whereBetween('created_at', [$startDate, $endDate])
             ->where('status', 'resolved')
             ->count();
 
-        $avgReslutionTime = Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])
+        $avgReslutionTime = Ticket::whereBetween('created_at', [$startDate, $endDate])
             ->where('status', 'resolved')
             ->whereNotNull('completed_at')
             ->select(DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, completed_at)) as avg_time'))
             ->value('avg_time') ?? 0;
 
         $statusDistribution = [
-            'open' => Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])->where('status', 'open')->count(),
-            'in_progress' => Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])->where('status', 'in_progress')->count(),
-            'resolved' => Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])->where('status', 'resolved')->count(),
-            'rejected' => Ticket::whereBetween('created_at', [$currentMonth, $endOfMonth])->where('status', 'rejected')->count(),
+            'open' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('status', 'open')->count(),
+            'in_progress' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('status', 'in_progress')->count(),
+            'resolved' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('status', 'resolved')->count(),
+            'rejected' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('status', 'rejected')->count(),
         ];
 
         $dashboardData = [
