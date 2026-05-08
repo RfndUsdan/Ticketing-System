@@ -15,6 +15,7 @@ class Ticket extends Model
         'code',
         'title',
         'description',
+        'image',
         'status',
         'priority',
         'completed_at',
@@ -29,5 +30,13 @@ class Ticket extends Model
     public function replies()
     {
         return $this->hasMany(TicketReply::class);
+    }
+    
+    protected function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return null;
     }
 }

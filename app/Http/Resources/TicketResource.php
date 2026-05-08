@@ -20,14 +20,14 @@ class TicketResource extends JsonResource
             'user' => new UserResource($this->user),
             'title' => $this->title,
             'description' => $this->description,
+            'image_url' => $this->image ? asset('storage/' . $this->image) : null,
             'status' => $this->status,
             'priority' => $this->priority,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'completed_at' => $this->completed_at,
 
-            // PERBAIKAN ADA DI SINI:
-            // Gunakan 'whenLoaded' dan panggil nama relasi 'replies' (sesuai Model & Controller)
+            
             'ticket_replies' => TicketReplyResource::collection($this->whenLoaded('replies')),
         ];
     }
