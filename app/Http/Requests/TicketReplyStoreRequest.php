@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth; 
+
 
 class TicketReplyStoreRequest extends FormRequest
 {
@@ -11,11 +13,14 @@ class TicketReplyStoreRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+
     public function rules(): array
     {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
         return [
             'content' => 'required|string',
-            'status' => auth()->user()->role == 'admin' ? 'required|in:open,in_progress,resolved,rejected' : 'nullable',
+            'status' => $user && $user->role == 'admin' ? 'required|in:open,in_progress,resolved,rejected' : 'nullable',
         ];
     }
 }

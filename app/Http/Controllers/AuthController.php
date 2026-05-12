@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller {
+    
     public function login(Request $request)
     {
         try {
@@ -22,6 +23,7 @@ class AuthController extends Controller {
                 ], 401);
             }
 
+            /** @var \App\Models\User $user */
             $user = Auth::user();
             $token = $user->createToken('auth_Token')->plainTextToken;
 
@@ -43,12 +45,12 @@ class AuthController extends Controller {
     public function me()
     {
         try {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
 
             return response()->json([
                 'message' => 'Profile User berhasil diambil',
                 'data' => new UserResource($user)
-                
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -61,13 +63,21 @@ class AuthController extends Controller {
     public function logout()
     {
         try {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
-            $user->currentAccessToken()->delete();
+            
+            // Tampung token ke variabel dan beri tahu Intelephense tipe aslinya
+            /** @var \Laravel\Sanctum\PersonalAccessToken $token */
+            $token = $user->currentAccessToken();
+
+            // Tambahkan pengecekan if ($token) agar lebih aman dari error runtime
+            if ($token) {
+                $token->delete();
+            }
 
             return response()->json([
                 'message' => 'Logout berhasil',
                 'data' => null
-                
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -76,7 +86,7 @@ class AuthController extends Controller {
             ], 500);
         }
     }
-
+    
     public function register(RegisterStoreRequest $request)
     {
         $data = $request->validated();
@@ -102,12 +112,12 @@ class AuthController extends Controller {
                 ]
             ], 201);
         } catch (Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'message' => 'Terjadi Kesalahan',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
-
 }
-            

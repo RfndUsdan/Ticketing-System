@@ -9,39 +9,42 @@ use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Http\Resources\TicketResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class TicketController extends Controller
 {
-
     public function index(Request $request)
     {
-       try {
-        $query = Ticket::with(['replies.user', 'user']);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-        $query->orderBy('created_at', 'desc');
+        try {
+            $query = Ticket::with(['replies.user', 'user']);
 
-        if($request->search){
-            $query->where('code', 'like', '%' . $request->search . '%')
-                  ->orWhere('title', 'like', '%' . $request->search . '%');
-        }
+            $query->orderBy('created_at', 'desc');
 
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
+            if ($request->search) {
+                $query->where('code', 'like', '%' . $request->search . '%')
+                      ->orWhere('title', 'like', '%' . $request->search . '%');
+            }
 
-        if ($request->priority) {
-            $query->where('priority', $request->priority);
-        }
+            if ($request->status) {
+                $query->where('status', $request->status);
+            }
 
-        if (auth()->user()->role == 'user') {
-            $query->where('user_id', auth()->user()->id);
-        }
+            if ($request->priority) {
+                $query->where('priority', $request->priority);
+            }
 
-        $tickets = $query->get();
-       } catch (\Exception $e) {
+            // Ganti pemanggilan auth()->user() dengan variabel $user
+            if ($user->role == 'user') {
+                $query->where('user_id', $user->id);
+            }
 
+            $tickets = $query->get();
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Terjadi Kesalahan',
                 'data' => $e->getMessage()
@@ -56,6 +59,9 @@ class TicketController extends Controller
 
     public function show($code)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
         try {
             $ticket = Ticket::with(['replies.user', 'user'])
                         ->where('code', $code)
@@ -67,7 +73,8 @@ class TicketController extends Controller
                 ], 404);
             }
 
-            if (auth()->user()->role =='user' && $ticket->user_id != auth()->user()->id) {
+            // Gunakan $user agar lebih bersih
+            if ($user->role == 'user' && $ticket->user_id != $user->id) {
                 return response()->json([
                     'message' => 'Anda tidak memiliki akses ke ticket ini',
                 ], 403);
@@ -79,7 +86,6 @@ class TicketController extends Controller
             ], 200);
 
         } catch (Exception $e) {
-
             return response()->json([
                 'message' => 'Terjadi Kesalahan',
                 'data' => null
@@ -89,23 +95,25 @@ class TicketController extends Controller
 
     public function store(TicketStoreRequest $request) 
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
         $data = $request->validated();
 
         DB::beginTransaction();
 
         try {
             $ticket = new Ticket;
-            $ticket->user_id = auth()->user()->id;
+            $ticket->user_id = $user->id; // Menggunakan variabel
             $ticket->code = 'TICS' . rand(10000, 99999);
             $ticket->title = $data['title'];
             $ticket->description = $data['description'];
             $ticket->priority = $data['priority'];
             $ticket->status = 'open';
             
-
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $path = $file->store('tickets', 'public'); // Simpan di folder storage/app/public/tickets
+                $path = $file->store('tickets', 'public');
                 $ticket->image = $path;
             }
 
@@ -132,6 +140,9 @@ class TicketController extends Controller
 
     public function storeReply(TicketReplyStoreRequest $request, $code)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
         $data = $request->validated();
 
         DB::beginTransaction();
@@ -145,7 +156,8 @@ class TicketController extends Controller
                 ], 404);
             }
 
-            if (auth()->user()->role == 'user' && $ticket->user_id != auth()->user()->id) {
+            // Ganti di sini
+            if ($user->role == 'user' && $ticket->user_id != $user->id) {
                 return response()->json([
                     'message'=>'Anda tidak bisa membalas tiket ini',
                 ], 403);
@@ -153,11 +165,12 @@ class TicketController extends Controller
 
             $ticketReply = new TicketReply();
             $ticketReply->ticket_id = $ticket->id;
-            $ticketReply->user_id = auth()->user()->id;
+            $ticketReply->user_id = $user->id; // Dan di sini
             $ticketReply->content = $data['content'];
             $ticketReply->save();
 
-            if (auth()->user()->role == 'admin') {
+            // Serta di sini
+            if ($user->role == 'admin') {
                 $ticket->status = $data['status'];
                 if ($data['status'] == 'resolved') {
                     $ticket->completed_at = now();
@@ -171,6 +184,7 @@ class TicketController extends Controller
                 'message' => 'Balasan tiket berhasil ditambahkan',
                 'data' => new TicketReplyResource($ticketReply)
             ], 201);
+            
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -180,8 +194,12 @@ class TicketController extends Controller
             ], 500);
         }
     }
+
     public function destroy($code)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
         try {
             $ticket = Ticket::where('code', $code)->first();
 
@@ -189,14 +207,15 @@ class TicketController extends Controller
                 return response()->json(['message' => 'Ticket tidak ditemukan'], 404);
             }
 
-            // Proteksi: Hanya admin atau pemilik tiket yang bisa hapus
-            if (auth()->user()->role == 'user' && $ticket->user_id != auth()->user()->id) {
+            // Ganti di sini
+            if ($user->role == 'user' && $ticket->user_id != $user->id) {
                 return response()->json(['message' => 'Akses ditolak'], 403);
             }
 
-            $ticket->delete(); // Karena pakai SoftDeletes, ini hanya mengisi deleted_at
+            $ticket->delete();
 
             return response()->json(['message' => 'Ticket berhasil dihapus'], 200);
+            
         } catch (Exception $e) {
             return response()->json(['message' => 'Gagal menghapus ticket'], 500);
         }
