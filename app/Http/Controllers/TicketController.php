@@ -101,13 +101,15 @@ class TicketController extends Controller
             $ticket->description = $data['description'];
             $ticket->priority = $data['priority'];
             $ticket->status = 'open';
-            $ticket->save();
+            
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $path = $file->store('tickets', 'public'); // Simpan di folder storage/app/public/tickets
                 $ticket->image = $path;
             }
+
+            $ticket->save();
 
             DB::commit();
 
