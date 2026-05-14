@@ -38,7 +38,6 @@ class TicketController extends Controller
                 $query->where('priority', $request->priority);
             }
 
-            // Ganti pemanggilan auth()->user() dengan variabel $user
             if ($user->role == 'user') {
                 $query->where('user_id', $user->id);
             }

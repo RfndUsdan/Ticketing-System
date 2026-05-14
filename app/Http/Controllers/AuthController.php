@@ -66,11 +66,9 @@ class AuthController extends Controller {
             /** @var \App\Models\User $user */
             $user = Auth::user();
             
-            // Tampung token ke variabel dan beri tahu Intelephense tipe aslinya
-            /** @var \Laravel\Sanctum\PersonalAccessToken $token */
+]            /** @var \Laravel\Sanctum\PersonalAccessToken $token */
             $token = $user->currentAccessToken();
 
-            // Tambahkan pengecekan if ($token) agar lebih aman dari error runtime
             if ($token) {
                 $token->delete();
             }
