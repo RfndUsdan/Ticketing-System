@@ -66,7 +66,7 @@ class AuthController extends Controller {
             /** @var \App\Models\User $user */
             $user = Auth::user();
             
-]            /** @var \Laravel\Sanctum\PersonalAccessToken $token */
+            /** @var \Laravel\Sanctum\PersonalAccessToken $token */
             $token = $user->currentAccessToken();
 
             if ($token) {
