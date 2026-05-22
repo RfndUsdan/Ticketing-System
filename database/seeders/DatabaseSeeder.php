@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'gabriel@email.com'],
             [
                 'name' => 'Gabriel',
+                'nim' => '2305101001',
                 'password' => bcrypt('password'),
                 'role' => 'user',
             ]
