@@ -18,7 +18,9 @@ class RegisterStoreRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6',
+            'nim' => 'required|string|max:20|unique:users',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

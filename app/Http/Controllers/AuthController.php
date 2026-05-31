@@ -96,6 +96,15 @@ class AuthController extends Controller {
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->password = Hash::make($data['password']);
+
+            $user->nim = $data['nim'] ?? null;
+
+
+            if ($request->hasFile('avatar')) {
+                // Simpan foto ke folder 'storage/app/public/avatars'
+                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+                $user->avatar = $avatarPath;
+            }
             $user->save();
 
             $token = $user->createToken('auth_Token')->plainTextToken;
