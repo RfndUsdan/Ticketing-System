@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::middleware('admin')->group(function(){
         Route::get('/dashboard/statistic', [DashboardController::class, 'getStatistic']);
         Route::delete('/ticket/{code}', [TicketController::class, 'destroy']);
+        Route::apiResource('users', UserController::class)->except(['create', 'edit']);
     });
 
     
