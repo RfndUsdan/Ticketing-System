@@ -29,6 +29,8 @@ class UserUpdateRequest extends FormRequest
             'password' => 'nullable|string|min:8',
             'role' => 'sometimes|required|string|in:admin,user',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            
+            'remove_avatar' => 'nullable', 
         ];
     }
 }

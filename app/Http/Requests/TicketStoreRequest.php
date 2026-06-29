@@ -16,8 +16,9 @@ class TicketStoreRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'priority' => 'required|in:low,medium,high',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
+            'priority' => 'required|in:low,normal,high',
+            'category' => 'required|string|in:Fasilitas,Jaringan,Kebersihan,Administrasi,Lainnya',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ];
     }
 }

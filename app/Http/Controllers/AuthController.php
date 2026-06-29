@@ -179,4 +179,29 @@ class AuthController extends Controller {
             ], 500);
         }
     }
+    public function deleteAvatar()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        try {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+                
+                $user->avatar = null;
+                $user->save();
+            }
+
+            return response()->json([
+                'message' => 'Foto profil berhasil dihapus',
+                'data' => new UserResource($user)
+            ], 200);
+            
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi Kesalahan saat menghapus foto',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

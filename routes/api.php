@@ -16,6 +16,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/profile', [AuthController::class, 'updateProfile']);
+    Route::delete('/profile/avatar', [AuthController::class, 'deleteAvatar']);
+    
 
     Route::middleware('admin')->group(function(){
         Route::get('/dashboard/statistic', [DashboardController::class, 'getStatistic']);

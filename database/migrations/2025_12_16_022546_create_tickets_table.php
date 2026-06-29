@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->string('code')->unique();
             $table->text('title');
+            $table->string('category')->default('Lainnya');
             $table->longText('description');
             $table->enum('status', ['open', 'in_progress', 'resolved', 'rejected'])->default('open');
-            $table->enum('priority', ['low', 'medium', 'high']);
+            $table->enum('priority', ['low', 'normal', 'high']);
             $table->timestamps();
             $table->timestamp(('completed_at'))->nullable();
         });

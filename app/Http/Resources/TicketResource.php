@@ -23,6 +23,7 @@ class TicketResource extends JsonResource
             'image_url' => $this->image ? asset('storage/' . $this->image) : null,
             'status' => $this->status,
             'priority' => $this->priority,
+            'category' => $this->category,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'completed_at' => $this->completed_at,

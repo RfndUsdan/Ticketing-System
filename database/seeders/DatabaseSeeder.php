@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@email.com'], // Cek berdasarkan email
+            ['email' => 'admin@email.com'], 
             [
                 'name' => 'Admin',
                 'password' => bcrypt('password'),
@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['email' => 'gabriel@email.com'],
+            ['email' => 'davidraya@email.com'],
             [
-                'name' => 'Gabriel',
+                'name' => 'David Raya',
                 'nim' => '2305101001',
                 'password' => bcrypt('password'),
                 'role' => 'user',

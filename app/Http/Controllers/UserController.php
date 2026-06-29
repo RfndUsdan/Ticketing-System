@@ -7,6 +7,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -40,6 +41,15 @@ class UserController extends Controller
 
         if (empty($validated['password'])) {
             unset($validated['password']);
+        } 
+        // Catatan: Pastikan kamu menggunakan Mutator di Model User untuk hashing password, 
+        // atau tambahkan Hash::make() di sini jika belum.
+
+        if ($request->has('remove_avatar') && $request->remove_avatar) {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $validated['avatar'] = null; 
         }
 
         if ($request->hasFile('avatar')) {

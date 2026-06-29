@@ -16,6 +16,7 @@ class Ticket extends Model
         'title',
         'description',
         'image',
+        'category',
         'status',
         'priority',
         'completed_at',
@@ -39,4 +40,5 @@ class Ticket extends Model
         }
         return null;
     }
+    
 }

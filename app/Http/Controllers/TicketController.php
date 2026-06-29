@@ -43,10 +43,14 @@ class TicketController extends Controller
             }
 
             $tickets = $query->get();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'message' => 'Terjadi Kesalahan',
-                'data' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ], 500);
         }
 
@@ -72,7 +76,6 @@ class TicketController extends Controller
                 ], 404);
             }
 
-            // Gunakan $user agar lebih bersih
             if ($user->role == 'user' && $ticket->user_id != $user->id) {
                 return response()->json([
                     'message' => 'Anda tidak memiliki akses ke ticket ini',
@@ -103,9 +106,10 @@ class TicketController extends Controller
 
         try {
             $ticket = new Ticket;
-            $ticket->user_id = $user->id; // Menggunakan variabel
+            $ticket->user_id = $user->id; 
             $ticket->code = 'TICS' . rand(10000, 99999);
             $ticket->title = $data['title'];
+            $ticket->category = $data['category'];
             $ticket->description = $data['description'];
             $ticket->priority = $data['priority'];
             $ticket->status = 'open';
@@ -155,7 +159,6 @@ class TicketController extends Controller
                 ], 404);
             }
 
-            // Ganti di sini
             if ($user->role == 'user' && $ticket->user_id != $user->id) {
                 return response()->json([
                     'message'=>'Anda tidak bisa membalas tiket ini',
@@ -164,11 +167,10 @@ class TicketController extends Controller
 
             $ticketReply = new TicketReply();
             $ticketReply->ticket_id = $ticket->id;
-            $ticketReply->user_id = $user->id; // Dan di sini
+            $ticketReply->user_id = $user->id; 
             $ticketReply->content = $data['content'];
             $ticketReply->save();
 
-            // Serta di sini
             if ($user->role == 'admin') {
                 $ticket->status = $data['status'];
                 if ($data['status'] == 'resolved') {
@@ -206,7 +208,6 @@ class TicketController extends Controller
                 return response()->json(['message' => 'Ticket tidak ditemukan'], 404);
             }
 
-            // Ganti di sini
             if ($user->role == 'user' && $ticket->user_id != $user->id) {
                 return response()->json(['message' => 'Akses ditolak'], 403);
             }
