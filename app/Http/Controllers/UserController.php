@@ -42,8 +42,6 @@ class UserController extends Controller
         if (empty($validated['password'])) {
             unset($validated['password']);
         } 
-        // Catatan: Pastikan kamu menggunakan Mutator di Model User untuk hashing password, 
-        // atau tambahkan Hash::make() di sini jika belum.
 
         if ($request->has('remove_avatar') && $request->remove_avatar) {
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
