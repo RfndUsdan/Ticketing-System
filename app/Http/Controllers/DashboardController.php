@@ -37,12 +37,21 @@ class DashboardController extends Controller
             'rejected' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('status', 'rejected')->count(),
         ];
 
+        $categoryDistribution = [
+            'Fasilitas' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('category', 'Fasilitas')->count(),
+            'Jaringan' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('category', 'Jaringan')->count(),
+            'Kebersihan' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('category', 'Kebersihan')->count(),
+            'Administrasi' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('category', 'Administrasi')->count(),
+            'Lainnya' => Ticket::whereBetween('created_at', [$startDate, $endDate])->where('category', 'Lainnya')->count(),
+        ];
+
         $dashboardData = [
             'total_tickets' => $totalTickets,
             'active_tickets' => $activeTickets,
             'resolved_tickets' => $resolvedTickets,
             'avg_resolution_time' => round($avgReslutionTime, 1),
             'status_distribution' => $statusDistribution,
+            'category_distribution' => $categoryDistribution, 
         ];
 
         return response()->json([
