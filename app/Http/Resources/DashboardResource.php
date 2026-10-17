@@ -24,7 +24,9 @@ class DashboardResource extends JsonResource
                 'in_progress' => $this['status_distribution']['in_progress'],
                 'resolved' => $this['status_distribution']['resolved'],
                 'rejected' => $this['status_distribution']['rejected'],
-            ],
+            ], 
+
+            'category_distribution' => $this['category_distribution'] ?? [],
         ];
     }
 }
